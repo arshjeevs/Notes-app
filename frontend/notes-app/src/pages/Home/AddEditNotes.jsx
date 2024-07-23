@@ -5,9 +5,6 @@ const AddEditNotes = () => {
   const [Content, setContent] = useState("");
   return (
     <div>
-        <button className="" onClick={onClose}>
-            <MdClose />
-        </button>
       <div className="flex flex-col gap-2">
         <label className="input-label">TITLE</label>
       </div>
@@ -15,7 +12,7 @@ const AddEditNotes = () => {
         type="text"
         className="text-2xl text-slate-950 outline-none"
         placeholder="Go to Gym at 5"
-        value={title}
+        value={Title}
         onChange={({ target }) => setTitle(e.target.value)}
       />
       <div className="flex flex-col gap-2 mt-4">
@@ -28,10 +25,6 @@ const AddEditNotes = () => {
           value={Content}
           onChange={({ target }) => setContent(e.target.value)}
         ></textarea>
-      </div>
-
-      <div className="mt-3">
-        <label className="input-label">TAGS</label>
       </div>
 
       <button className="btn-primary font-medium p-3 mt-2">ADD</button>
