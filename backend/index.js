@@ -101,6 +101,7 @@ app.post("/login", async (req,res) => {
 
 app.post("/add-note", authenticateToken, async (req,res) => {
     const { title, content } = req.body
+    console.log(req.body)
     const user = req.user
     if(!title){
         return res.json({
@@ -282,6 +283,7 @@ app.put("/update-note-pinned", authenticateToken, async (req,res) => {
 
 app.get("/get-user", authenticateToken, async (req,res) => {
     const user = req.user
+    console.log(user._id)
 
     const isUser = await User.findOne({
         _id: user._id
