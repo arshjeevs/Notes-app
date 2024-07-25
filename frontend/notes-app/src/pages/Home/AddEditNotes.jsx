@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { MdClose } from "react-icons/md";
 import axios from "axios";
-const AddEditNotes = ({ onClose, noteData, type, getAllNotes }) => {
+
+const AddEditNotes = ({ onClose, noteData, type, getAllNotes, handleShowToast }) => {
   const [Title, setTitle] = useState("" || noteData?.title);
   const [Content, setContent] = useState("" || noteData?.content);
 
@@ -24,7 +25,7 @@ const AddEditNotes = ({ onClose, noteData, type, getAllNotes }) => {
       );
       console.log(response.data);
       if (response.data && response.data.note) {
-        console.log("Note Added");
+        handleShowToast("Note Added SUccessfully")
         getAllNotes();
         onClose();
       }
@@ -38,7 +39,7 @@ const AddEditNotes = ({ onClose, noteData, type, getAllNotes }) => {
       }
     }
   };
-
+ 
   const editNote = async () => {
     const noteId = noteData._id
     try {
@@ -57,7 +58,7 @@ const AddEditNotes = ({ onClose, noteData, type, getAllNotes }) => {
       );
 
       if (response.data && response.data.note) {
-        console.log("Note Added");
+        handleShowToast("Note Added SUccessfully")
         getAllNotes();
         onClose();
       }
@@ -91,6 +92,7 @@ const AddEditNotes = ({ onClose, noteData, type, getAllNotes }) => {
       addNewNote();
     }
   };
+
   return (
     <div className="relative">
       <button

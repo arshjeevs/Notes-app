@@ -7,6 +7,7 @@ import Modal from "react-modal";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import moment from "moment"
+import Toast from "../../components/Toast/Toast";
 
 const Home = () => {
   const [openAddEditModal, setOpenAddEditModal] = useState({
@@ -17,7 +18,11 @@ const Home = () => {
 
   const [UserInfo, setUserInfo] = useState(null);
   const [AllNotes, setAllNotes] = useState([]);
-
+  const [ToastMsg, setToastMsg] = useState({
+    isShown: false,
+    message: "",
+    type: "add",
+  })
   const navigate = useNavigate();
   
   const handleEdit = (noteDetails) => {
@@ -25,6 +30,21 @@ const Home = () => {
       isShown: true,
       type: "edit",
       data: noteDetails,
+    })
+  };
+
+  const handleCloseToast = () => {
+    setToastMsg({
+      isShown: true,
+      message: "",
+    })
+  }
+
+  const handleShowToast = (message, type) => {
+    setToastMsg({ 
+      isShown: false,
+      message,
+      type
     })
   }
 
@@ -64,6 +84,67 @@ const Home = () => {
     }
   };
 
+  const deleteNote = async (noteData) => {
+    const noteId = noteData._id
+    try {
+      const Authorization = "Bearer " + localStorage.getItem("token");
+      const response = await axios.delete(
+        `http://localhost:3000/delete-note/${noteId}`,
+        {
+          headers: {
+            Authorization: Authorization,
+          },
+        }
+      );
+
+      if (response.data && response.data.note) {
+        handleShowToast("Note Deleted Successfully", 'delete')
+        getAllNotes();
+      }
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        setError(error.response.data.message);
+      }
+    }
+  }
+
+  const handlePinNote = async (noteData) => {
+    const noteId = noteData._id
+    let Pinned = true
+    if( !noteData.isPinned ){
+      Pinned = false
+    }
+    try {
+      const Authorization = "Bearer " + localStorage.getItem("token");
+      const response = await axios.put(
+        `http://localhost:3000/edit-note/${noteId}`,
+        {
+          title: noteData.title,
+          content: noteData.Content,
+          isPinned: Pinned,
+        }
+      );
+      console.log(response.data)
+      if (response.data && response.data.note) {
+        handleShowToast("Note Updated SUccessfully")
+        getAllNotes();
+        onClose();
+      }
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        setError(error.response.data.message);
+      }
+    }
+  }
+
   useEffect(() => {
     getAllNotes();
     getUserInfo();
@@ -85,8 +166,8 @@ const Home = () => {
               content={item.content}
               isPinned={item.isPinned}
               onEdit={() => handleEdit(item)}
-              onDelete={() => {}}
-              onPinNote={() => {}}
+              onDelete={() => deleteNote(item)}
+              onPinNote={() => handlePinNote(item)}
             />
           ))}
         </div>
@@ -118,8 +199,15 @@ const Home = () => {
           onClose={ () => {
             setOpenAddEditModal({isShown: false, type: "add" , data: null})
           }}
+          handleShowToast={handleShowToast}
           />
         </Modal>
+        <Toast 
+          isShown={ToastMsg.isShown}
+          type={ToastMsg.type}
+          message={ToastMsg.message}
+          onClose={handleCloseToast}
+        />
       </div>
     </>
   );
